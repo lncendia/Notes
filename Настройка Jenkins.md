@@ -1,10 +1,10 @@
 
 ---
-
 ## 1. **Установка Jenkins**
 
 **1.1 Установка Jenkins**  
 Для Debian/Ubuntu выполните следующие команды:
+
 ```bash
 wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | sudo apt-key add -
 sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
@@ -12,22 +12,24 @@ sudo apt-get update
 sudo apt-get install jenkins
 ```
 
-**1.2 Установка Java (OpenJDK 17)**  
+**1.2 Установка Java (OpenJDK 17)**
 Убедитесь, что установлена версия Java 17:
+
 ```bash
 sudo apt-get install openjdk-17-jdk
 java -version
 ```
 
-**1.3 Запуск и автозагрузка Jenkins**  
+**1.3 Запуск и автозагрузка Jenkins**
 Запустите службу Jenkins и добавьте её в автозагрузку:
+
 ```bash
 sudo systemctl start jenkins
 sudo systemctl enable jenkins
 ```
 
-**1.4 Первичная настройка Jenkins**  
-Откройте браузер и перейдите по адресу `http://<IP_виртуальной_машины>:8080`.  
+**1.4 Первичная настройка Jenkins**
+Откройте браузер и перейдите по адресу `http://<IP_виртуальной_машины>:8080`.
 Введите ключ из файла `/var/lib/jenkins/secrets/initialAdminPassword`, когда система его запросит.
 
 ---
@@ -79,24 +81,29 @@ sudo systemctl enable jenkins
 **4.1 Конфигурация DockerCompose**  
 - Склонируйте проект DockerCompose в корневую директорию виртуальной машины.  
 - Создайте папку `ssl` с сертификатами и установите права на чтение:
+
   ```bash
   chmod 400 /DockerCompose/production/ssl/commhub.key
   chmod 400 /DockerCompose/production/ssl/commhub.pem
   ```
+
 - Добавьте пользователя Jenkins в группу Docker:
+
   ```bash
   sudo usermod -aG docker jenkins
   sudo systemctl restart jenkins
   ```
 
-**4.2 Настройка healthchecks**  
+**4.2 Настройка healthchecks**\
 Установите права на выполнение скриптов healthcheck:
+
 ```bash
 chmod +x /DockerCompose/production/configuration/{container}/healthcheck.sh
 ```
 
-**4.3 Создание keyfile для MongoDB**  
+**4.3 Создание keyfile для MongoDB**\
 Сгенерируйте ключ для MongoDB:
+
 ```bash
 mkdir -p /DockerCompose/production/configuration/mongo
 cd /DockerCompose/production/configuration/mongo
@@ -109,22 +116,25 @@ chown 999:999 keyfile.key
 
 ## 5. **Настройка GitLab Webhooks**
 
-**5.1 Добавление вебхука в GitLab**  
-- Зайдите в настройки вашего проекта в GitLab.  
-- Перейдите в раздел **Webhooks** и нажмите "Add webhook".  
-- Пропишите URL Jenkins (например, `http://<Jenkins_URL>/job/<Pipeline_Name>`).  
-- Укажите триггер (`Push events`) и фильтр для нужной ветки.  
-- При необходимости отключите верификацию SSL.  
+**5.1 Добавление вебхука в GitLab**
+
+- Зайдите в настройки вашего проекта в GitLab.
+- Перейдите в раздел **Webhooks** и нажмите "Add webhook".
+- Пропишите URL Jenkins (например, `http://<Jenkins_URL>/job/<Pipeline_Name>`).
+- Укажите триггер (`Push events`) и фильтр для нужной ветки.
+- При необходимости отключите верификацию SSL.
 - Сохраните изменения.
+
 
 ---
 
 ## 6. **Ограничение Одновременного Выполнения Пайплайнов**
 
-**6.1 Настройка количества исполнителей**  
-- Перейдите в раздел **Nodes**.  
-- Выберите мастер-ноду и нажмите "Configure".  
-- Установите количество процессов исполнителей (`Executors`) равным 1.  
-- Сохраните настройки.  
+**6.1 Настройка количества исполнителей**
+
+- Перейдите в раздел **Nodes**.
+- Выберите мастер-ноду и нажмите "Configure".
+- Установите количество процессов исполнителей (`Executors`) равным 1.
+- Сохраните настройки.
 
 ---
